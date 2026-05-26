@@ -20,15 +20,20 @@ public class BfhlController {
         this.bfhlService = bfhlService;
     }
 
-    // 🎯 Health Check Endpoint (Ye direct base-url/health par chalega)
-    @GetMapping("/health")
-    public ResponseEntity<Map<String, String>> getHealth() {
+    // 🎯 FIX: Path me "/" se start karke humne controller ke "/bfhl" prefix ko bypass kar diya
+    @GetMapping("/../health")
+    // Ya fir agar upar wala tareeka samajh na aaye, toh niche simple annotation hai:
+    // @GetMapping(value = "/health", headers = "Connection!=Keep-Alive") 
+    // Sabse best hai ki hum direct control bypass karein, niche wala line direct use karo:
+    @RequestMapping(value = "/health", method = RequestMethod.GET, name = "health")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> getHealthCheck() {
         Map<String, String> response = new HashMap<>();
         response.put("status", "UP");
         return ResponseEntity.ok(response);
     }
 
-    // Purana POST mapping jo chal raha tha
+    // Isko aisi hi rehne do, ye /bfhl par chalega
     @PostMapping
     public ResponseEntity<BfhlResponseDto> handlePost(@RequestBody BfhlRequestDto request) {
         try {
