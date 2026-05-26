@@ -10,8 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/bfhl")
-@CrossOrigin(origins = "*") 
+@CrossOrigin(origins = "*") // For frontend calls
 public class BfhlController {
 
     private final BfhlService bfhlService;
@@ -20,21 +19,16 @@ public class BfhlController {
         this.bfhlService = bfhlService;
     }
 
-    // 🎯 FIX: Path me "/" se start karke humne controller ke "/bfhl" prefix ko bypass kar diya
-    @GetMapping("/../health")
-    // Ya fir agar upar wala tareeka samajh na aaye, toh niche simple annotation hai:
-    // @GetMapping(value = "/health", headers = "Connection!=Keep-Alive") 
-    // Sabse best hai ki hum direct control bypass karein, niche wala line direct use karo:
-    @RequestMapping(value = "/health", method = RequestMethod.GET, name = "health")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> getHealthCheck() {
+    // 🎯 1. Health Check Endpoint (Direct base URL par chalega)
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, String>> getHealth() {
         Map<String, String> response = new HashMap<>();
         response.put("status", "UP");
         return ResponseEntity.ok(response);
     }
 
-    // Isko aisi hi rehne do, ye /bfhl par chalega
-    @PostMapping
+    // 🎯 2. Actual POST API Endpoint (Jo tumhara sahi chal raha hai)
+    @PostMapping("/bfhl")
     public ResponseEntity<BfhlResponseDto> handlePost(@RequestBody BfhlRequestDto request) {
         try {
             BfhlResponseDto response = bfhlService.processData(request);
@@ -44,5 +38,13 @@ public class BfhlController {
             errorResponse.setIsSuccess(false);
             return ResponseEntity.status(500).body(errorResponse);
         }
+    }
+
+    // 🎯 3. Optional: BFHL GET Endpoint (Agar tester /bfhl par GET mare toh 405 na aaye)
+    @GetMapping("/bfhl")
+    public ResponseEntity<Map<String, Integer>> handleGet() {
+        Map<String, Integer> response = new HashMap<>();
+        response.put("operation_code", 1);
+        return ResponseEntity.ok(response);
     }
 }
