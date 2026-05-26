@@ -6,9 +6,12 @@ import com.example.bfhl.service.BfhlService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/bfhl")
-@CrossOrigin(origins = "*") // Crucial for when the frontend tries to call it!
+@CrossOrigin(origins = "*") 
 public class BfhlController {
 
     private final BfhlService bfhlService;
@@ -17,6 +20,15 @@ public class BfhlController {
         this.bfhlService = bfhlService;
     }
 
+    // 🎯 Health Check Endpoint (Ye direct base-url/health par chalega)
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, String>> getHealth() {
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "UP");
+        return ResponseEntity.ok(response);
+    }
+
+    // Purana POST mapping jo chal raha tha
     @PostMapping
     public ResponseEntity<BfhlResponseDto> handlePost(@RequestBody BfhlRequestDto request) {
         try {
